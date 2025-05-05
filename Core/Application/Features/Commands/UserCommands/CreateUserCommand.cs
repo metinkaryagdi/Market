@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Commands.UserCommands
 {
-    public class CreateUserCommand : IRequest
+    public class CreateUserCommand : IRequest<Unit>
     {
     public string UserName { get; set; }
     public string Password { get; set; }

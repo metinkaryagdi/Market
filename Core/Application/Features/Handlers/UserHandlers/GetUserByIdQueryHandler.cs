@@ -1,37 +1,39 @@
-﻿using Application.Features.Queries.UserQueries;
-using Application.Features.Results.UserResults;
+﻿using Application.Features.Results.UserResults;
+using Application.Features.Queries.UserQueries;
+using AutoMapper;
+using Domain.Interfaces; // IUserRepository'i kullanıyoruz
 using MediatR;
-using Persistance.Context;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Features.Handlers.UserHandlers
 {
     public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, GetUserByIdQueryResult>
     {
-        private readonly MarketContext _context;
-        public GetUserByIdQueryHandler(MarketContext context)
+        private readonly IUserRepository _userRepository; // IUserRepository'i kullanıyoruz
+        private readonly IMapper _mapper;
+
+        public GetUserByIdQueryHandler(IUserRepository userRepository, IMapper mapper)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
+
         public async Task<GetUserByIdQueryResult> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            var values = await _context.Users.FindAsync( request.UserId);
-            return new GetUserByIdQueryResult
+            // UserId ile kullanıcıyı repository üzerinden al
+            var user = await _userRepository.GetByIdAsync(request.UserId);
+
+            if (user == null)
             {
-                UserId = values.UserId,
-                UserName = values.UserName,
-                Password = values.Password,
-                Email = values.Email,
-                PhoneNumber = values.PhoneNumber,
-                Address = values.Address,
-                DateOfBirth = values.DateOfBirth,
-                Role = values.Role,
-                CreatedAt = values.CreatedAt
-            };
+                throw new Exception("User not found");
+            }
+
+            // AutoMapper ile Entity'yi DTO'ya dönüştür
+            var result = _mapper.Map<GetUserByIdQueryResult>(user);
+
+            return result;
         }
     }
 }

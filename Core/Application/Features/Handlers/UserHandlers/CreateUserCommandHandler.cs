@@ -1,37 +1,42 @@
 ﻿using Application.Features.Commands.UserCommands;
+using AutoMapper;
 using Domain.Entities;
+using Domain.Interfaces;
 using MediatR;
 using Persistance.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Features.Handlers.UserHandlers
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Unit>
 {
-    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand>
+    private readonly IUserRepository _userRepository; // UserRepository bağımlılığı
+    private readonly IMapper _mapper;
+
+    public CreateUserCommandHandler(IUserRepository userRepository, IMapper mapper)
     {
-        private readonly MarketContext _context;
-        public CreateUserCommandHandler(MarketContext context)
+        _userRepository = userRepository;
+        _mapper = mapper;
+    }
+
+    public async Task<Unit> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context;
+            // AutoMapper ile CreateUserCommand'dan User entity'sine dönüşüm
+            var user = _mapper.Map<User>(request);
+            user.UserId = Guid.NewGuid();               // UserId'yi burada set ediyoruz
+            user.CreatedAt = DateTime.UtcNow;           // CreatedAt'ı burada set ediyoruz
+
+            // Repository üzerinden kullanıcıyı ekliyoruz
+            await _userRepository.AddUserAsync(user);
+
+            // Veritabanına kaydediyoruz
+            await _userRepository.SaveChangesAsync();
+
+            return Unit.Value; // MediatR'da void yerine bu döner
         }
-        public async Task Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            await _context.Users.AddAsync(new User
-            {
-                UserId = Guid.NewGuid(),
-                UserName = request.UserName,
-                Password = request.Password,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                Address = request.Address,
-                DateOfBirth = request.DateOfBirth,
-                Role = request.Role,
-                CreatedAt = DateTime.UtcNow
-            }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            // Hata oluştuğunda özel bir hata mesajı dönebiliriz
+            throw new Exception("User creation failed", ex);
         }
     }
 }

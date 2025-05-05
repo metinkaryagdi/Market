@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Commands.UserCommands
 {
-    public class UpdateUserCommand : IRequest
+    public class UpdateUserCommand : IRequest<Unit>
     {
         public Guid UserId { get; set; }
         public string UserName { get; set; }
