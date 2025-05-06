@@ -14,5 +14,12 @@ namespace Domain.Entities
         public decimal Price { get; set; } // Price of the product at the time of adding to cart
         public DateTime AddedAt { get; set; } // Date when the item was added to the cart
         public Guid UserId { get; set; } // Foreign key to User
+
+        // Navigation property to Product
+        public Product Product { get; set; }
+
+        // Navigation property to User
+        public User User { get; set; }
     }
+
 }

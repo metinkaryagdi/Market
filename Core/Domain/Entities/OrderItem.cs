@@ -14,5 +14,12 @@ namespace Domain.Entities
         public decimal Price { get; set; } // Price of the product at the time of order
         public DateTime AddedAt { get; set; } // Date when the item was added to the order
         public Guid OrderId { get; set; } // Foreign key to Order
+
+        // Navigation property to Order
+        public Order Order { get; set; }
+
+        // You might want to add a navigation property for Product as well
+        public Product Product { get; set; }
     }
+
 }

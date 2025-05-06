@@ -1,6 +1,7 @@
 ﻿using Application.Features.Queries.UserQueries;
 using Application.Mapping;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Persistance.Context;
 using Persistance.Repositories;
@@ -20,7 +21,8 @@ builder.Services.AddCors(options =>
 });
 
 // Add services to the container.
-builder.Services.AddDbContext<MarketContext>();
+builder.Services.AddDbContext<MarketContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MarketDbConnection")));
 
 // MediatR için assembly kaydını yapın
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdQuery).Assembly));
@@ -28,6 +30,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUs
 // AutoMapper profil dosyalarını ekleyin
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ProductProfile));
+builder.Services.AddAutoMapper(typeof(CategoryProfile));
 
 // Repositories ekleyin
 builder.Services.AddRepositories();

@@ -9,11 +9,11 @@ namespace Domain.Interfaces
 {
     public interface IProductRepository
     {
-        Task<Product> GetByIdAsync(Guid ProductId);
+        Task<Product> GetByIdAsync(Guid productId);
         Task<IEnumerable<Product>> GetAllAsync();
-        Task AddAsync(Product Product);
-        Task UpdateAsync(Product Product);
-        Task DeleteAsync(Guid ProductId);
+        Task AddAsync(Product product);
+        Task UpdateAsync(Product product);
+        Task DeleteAsync(Guid productId);
         Task SaveChangesAsync();
     }
 }

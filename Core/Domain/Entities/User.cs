@@ -17,11 +17,18 @@ namespace Domain.Entities
         public DateTime DateOfBirth { get; set; }
         public Role Role { get; set; } // e.g., Admin, User, etc.
         public DateTime CreatedAt { get; set; }
+
+        // User'ın birden fazla siparişi olabilir
+        public ICollection<Order> Orders { get; set; }
+
+        // User'ın birden fazla sepet öğesi olabilir
+        public ICollection<CartItem> CartItems { get; set; }
     }
-}
-public enum Role
-{
-    Admin,
-    Customer,
-    Employee
+
+    public enum Role
+    {
+        Admin,
+        Customer,
+        Employee
+    }
 }

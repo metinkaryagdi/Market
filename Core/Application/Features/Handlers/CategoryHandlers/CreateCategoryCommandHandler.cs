@@ -1,32 +1,41 @@
 ﻿using Application.Features.Commands.CategoryCommands;
+using AutoMapper;
 using Domain.Entities;
+using Domain.Interfaces;
 using MediatR;
-using Persistance.Context;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Features.Handlers.CategoryHandlers
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Unit>
     {
-        private readonly MarketContext _context;
-        public CreateCategoryCommandHandler(MarketContext context)
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
+
+        public CreateCategoryCommandHandler(ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
-        public async Task Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+
+        public async Task<Unit> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            await _context.Categories.AddAsync(new Category
+            try
             {
-                CategoryId = Guid.NewGuid(),
-                CategoryName = request.CategoryName
+                var category = _mapper.Map<Category>(request);
+                category.CategoryId = Guid.NewGuid(); // ID'yi burada ver
 
-            }, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+                await _categoryRepository.AddAsync(category);
+                await _categoryRepository.SaveChangesAsync();
+
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Kategori oluşturulurken hata oluştu.", ex);
+            }
         }
-
     }
 }

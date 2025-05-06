@@ -14,6 +14,11 @@ namespace Domain.Entities
         public decimal TotalAmount { get; set; } // Total amount of the order
         public Status Status { get; set; } // e.g., Pending, Shipped, Delivered, Cancelled
 
+        // Navigation property to User
+        public User User { get; set; }
+
+        // Navigation property to OrderItem (One-to-Many relationship with OrderItem)
+        public ICollection<OrderItem> OrderItems { get; set; }
     }
 }
 public enum Status

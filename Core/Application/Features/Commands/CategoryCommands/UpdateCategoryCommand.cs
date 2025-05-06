@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Commands.CategoryCommands
 {
-    public class UpdateCategoryCommand : IRequest
+    public class UpdateCategoryCommand : IRequest<Unit>
     {
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }

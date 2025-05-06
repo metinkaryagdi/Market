@@ -1,19 +1,15 @@
 ﻿using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Features.Commands.CategoryCommands
+namespace Application.Features.Queries.CategoryQueries
 {
-    public class DeleteCategoryCommand : IRequest
+    public class DeleteCategoryCommand : IRequest<bool>
     {
+        public Guid CategoryId { get; set; }
+
         public DeleteCategoryCommand(Guid categoryId)
         {
             CategoryId = categoryId;
         }
-
-        public Guid CategoryId { get; set; }
     }
 }

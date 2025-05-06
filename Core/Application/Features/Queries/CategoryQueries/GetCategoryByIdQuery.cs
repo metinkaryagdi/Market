@@ -1,13 +1,9 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Features.Results.CategoryResults;  // Bu importu eklemeyi unutma
 
 namespace Application.Features.Queries.CategoryQueries
 {
-    public class GetCategoryByIdQuery : IRequest<GetCategoryByIdQuery>
+    public class GetCategoryByIdQuery : IRequest<GetCategoryByIdQueryResult>  // Burada GetCategoryByIdQueryResult döndürülecek
     {
         public GetCategoryByIdQuery(Guid categoryId)
         {

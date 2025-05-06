@@ -9,12 +9,18 @@ namespace Domain.Entities
     public class Offer
     {
         public Guid OfferId { get; set; }
-        public string OfferName { get; set; } // Name of the offer
-        public decimal DiscountPercentage { get; set; } // Discount percentage for the offer
-        public DateTime StartDate { get; set; } // Start date of the offer
-        public DateTime EndDate { get; set; } // End date of the offer
-        public string Description { get; set; } // Description of the offer
-        public bool IsActive { get; set; } // Indicates if the offer is currently active
-        public Guid ProductId { get; set; } // Foreign key to Product
+        public string OfferName { get; set; }
+        public decimal DiscountPercentage { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Description { get; set; }
+        public bool IsActive { get; set; }
+
+        // Foreign key to Product
+        public Guid ProductId { get; set; }
+
+        // Navigation property to Product
+        public Product Product { get; set; }
     }
+
 }
