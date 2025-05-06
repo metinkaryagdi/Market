@@ -11,7 +11,7 @@ namespace Application.Features.Handlers.ProductHandlers
 {
     public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, GetProductByIdQueryResult>
     {
-        private readonly IProductRepository _productRepository; // IProductRepository'i kullanıyoruz
+        private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
 
         public GetProductByIdQueryHandler(IProductRepository productRepository, IMapper mapper)
@@ -22,7 +22,6 @@ namespace Application.Features.Handlers.ProductHandlers
 
         public async Task<GetProductByIdQueryResult> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            // ProductId ile ürünü repository üzerinden al
             var product = await _productRepository.GetByIdAsync(request.ProductId);
 
             if (product == null)
@@ -30,10 +29,7 @@ namespace Application.Features.Handlers.ProductHandlers
                 throw new Exception("Product not found");
             }
 
-            // AutoMapper ile Entity'yi DTO'ya dönüştür
-            var result = _mapper.Map<GetProductByIdQueryResult>(product);
-
-            return result;
+            return _mapper.Map<GetProductByIdQueryResult>(product);
         }
     }
 }

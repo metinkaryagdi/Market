@@ -1,7 +1,7 @@
-﻿using Application.Features.Results.UserResults;
-using Application.Features.Queries.UserQueries;
+﻿using Application.Features.Queries.UserQueries;
+using Application.Features.Results.UserResults;
 using AutoMapper;
-using Domain.Interfaces; // IUserRepository'i kullanıyoruz
+using Domain.Interfaces;
 using MediatR;
 using System;
 using System.Threading;
@@ -11,7 +11,7 @@ namespace Application.Features.Handlers.UserHandlers
 {
     public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, GetUserByIdQueryResult>
     {
-        private readonly IUserRepository _userRepository; // IUserRepository'i kullanıyoruz
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
         public GetUserByIdQueryHandler(IUserRepository userRepository, IMapper mapper)
@@ -22,7 +22,6 @@ namespace Application.Features.Handlers.UserHandlers
 
         public async Task<GetUserByIdQueryResult> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            // UserId ile kullanıcıyı repository üzerinden al
             var user = await _userRepository.GetByIdAsync(request.UserId);
 
             if (user == null)
@@ -30,10 +29,7 @@ namespace Application.Features.Handlers.UserHandlers
                 throw new Exception("User not found");
             }
 
-            // AutoMapper ile Entity'yi DTO'ya dönüştür
-            var result = _mapper.Map<GetUserByIdQueryResult>(user);
-
-            return result;
+            return _mapper.Map<GetUserByIdQueryResult>(user);
         }
     }
 }

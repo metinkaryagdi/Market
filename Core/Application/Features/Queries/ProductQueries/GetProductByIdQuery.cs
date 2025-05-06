@@ -1,22 +1,18 @@
 ﻿using Application.Features.Results.ProductResults;
-using Application.Features.Results.UserResults;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Features.Queries.ProductQueries
 {
     public class GetProductByIdQuery : IRequest<GetProductByIdQueryResult>
     {
+        // Constructor ile ProductId'yi alıyoruz, property için set gerekmiyor.
         public GetProductByIdQuery(Guid productId)
         {
             ProductId = productId;
         }
 
-        public Guid ProductId { get; set; }
+        // Sadece getter kullanıyoruz, constructor ile gelen değer atandı.
+        public Guid ProductId { get; }
     }
-
 }

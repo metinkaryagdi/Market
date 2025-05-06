@@ -1,5 +1,6 @@
 ﻿using Application.Features.Commands.CategoryCommands;
 using AutoMapper;
+using Core.Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using MediatR;
@@ -11,33 +12,30 @@ namespace Application.Features.Handlers.CategoryHandlers
 {
     public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Unit>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateCategoryHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public UpdateCategoryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        // IRequestHandler<UpdateCategoryCommand> arayüzüne uygun olarak, Task<Unit> dönüş tipi ile implement ediliyor.
         public async Task<Unit> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
 
             if (category == null)
             {
                 throw new Exception("Kategori bulunamadı.");
             }
 
-            // Güncellenmiş kategoriyi AutoMapper ile entity'ye aktarıyoruz.
             _mapper.Map(request, category);
 
-            // Veritabanında güncelleme yapıyoruz.
-            await _categoryRepository.UpdateAsync(category);
-            await _categoryRepository.SaveChangesAsync();
+            await _unitOfWork.CategoryRepository.UpdateAsync(category);
+            await _unitOfWork.CompleteAsync(); // UnitOfWork ile değişiklikleri kaydet
 
-            return Unit.Value; // MediatR'da void yerine Unit.Value döner.
+            return Unit.Value;
         }
     }
 }

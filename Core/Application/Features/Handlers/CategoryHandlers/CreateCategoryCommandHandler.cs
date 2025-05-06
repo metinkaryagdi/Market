@@ -1,5 +1,6 @@
 ﻿using Application.Features.Commands.CategoryCommands;
 using AutoMapper;
+using Core.Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using MediatR;
@@ -11,12 +12,12 @@ namespace Application.Features.Handlers.CategoryHandlers
 {
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Unit>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CreateCategoryCommandHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -27,8 +28,8 @@ namespace Application.Features.Handlers.CategoryHandlers
                 var category = _mapper.Map<Category>(request);
                 category.CategoryId = Guid.NewGuid(); // ID'yi burada ver
 
-                await _categoryRepository.AddAsync(category);
-                await _categoryRepository.SaveChangesAsync();
+                await _unitOfWork.CategoryRepository.AddAsync(category);
+                await _unitOfWork.CompleteAsync(); // UnitOfWork ile değişiklikleri kaydet
 
                 return Unit.Value;
             }

@@ -1,5 +1,6 @@
 ﻿using Application.Features.Commands.ProductCommands;
 using AutoMapper;
+using Core.Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using MediatR;
@@ -11,12 +12,12 @@ namespace Application.Features.Handlers.ProductHandlers
 {
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Unit>
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CreateProductCommandHandler(IProductRepository productRepository, IMapper mapper)
+        public CreateProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -28,17 +29,13 @@ namespace Application.Features.Handlers.ProductHandlers
                 product.ProductId = Guid.NewGuid(); // ProductId'yi burada set ediyoruz
                 product.CreatedAt = DateTime.UtcNow; // CreatedAt'ı burada set ediyoruz
 
-                // Repository üzerinden ürünü ekliyoruz
-                await _productRepository.AddAsync(product);
+                await _unitOfWork.ProductRepository.AddAsync(product);
+                await _unitOfWork.CompleteAsync(); // Değişiklikleri kaydet
 
-                // Veritabanına kaydediyoruz
-                await _productRepository.SaveChangesAsync();
-
-                return Unit.Value; // MediatR'da void yerine bu döner
+                return Unit.Value;
             }
             catch (Exception ex)
             {
-                // Daha spesifik bir hata fırlatmak daha iyi olabilir
                 throw new Exception("Product creation failed", ex);
             }
         }

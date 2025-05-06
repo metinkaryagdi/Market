@@ -1,6 +1,6 @@
 ﻿using Application.Features.Commands.CategoryCommands;
 using Application.Features.Queries.CategoryQueries;
-using Domain.Entities;
+using Core.Application.Interfaces;
 using Domain.Interfaces;
 using MediatR;
 using System;
@@ -11,25 +11,23 @@ namespace Application.Features.Handlers.CategoryHandlers
 {
     public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, bool>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        // Constructor injection ile repo'yu alıyoruz
-        public DeleteCategoryHandler(ICategoryRepository categoryRepository)
+        public DeleteCategoryHandler(IUnitOfWork unitOfWork)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            // Silinecek kategori
-            var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
             if (category == null)
             {
                 return false; // Kategori bulunamadı
             }
 
-            // Kategoriyi sil
-            await _categoryRepository.DeleteAsync(category);
+            await _unitOfWork.CategoryRepository.DeleteAsync(category.CategoryId);
+            await _unitOfWork.CompleteAsync(); // UnitOfWork ile değişiklikleri kaydet
             return true; // Silme işlemi başarılı
         }
     }

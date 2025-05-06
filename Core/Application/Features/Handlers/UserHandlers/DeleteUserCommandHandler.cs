@@ -1,26 +1,33 @@
 ﻿using Application.Features.Commands.UserCommands;
+using Core.Application.Interfaces;
 using MediatR;
-using Persistance.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Features.Handlers.UserHandlers
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
 {
-    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand>
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteUserCommandHandler(IUnitOfWork unitOfWork)
     {
-        private readonly MarketContext _context;
-        public DeleteUserCommandHandler(MarketContext context)
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            _context = context;
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(request.UserId);
+            if (user == null)
+            {
+                throw new Exception($"User with ID {request.UserId} not found");
+            }
+
+            await _unitOfWork.UserRepository.DeleteAsync(user.UserId);
+            await _unitOfWork.CompleteAsync(); // Değişiklikleri kaydet
         }
-        public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        catch (Exception ex)
         {
-            var values = await _context.Users.FindAsync(request.UserId);
-            _context.Users.Remove(values);
-            await _context.SaveChangesAsync();
+            // Hata fırlat, logla veya daha detaylı bir hata mesajı göster
+            throw new Exception("An error occurred while deleting the user", ex);
         }
     }
 }

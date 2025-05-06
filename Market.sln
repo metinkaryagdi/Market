@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{A1AECC48-2F87-4ECD-AA9C-290E4E2F84C0}"
 EndProject
@@ -16,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistance", "Infrastracture\Persistance\Persistance.csproj", "{580F9DAE-EF0C-480B-9F56-92EF979CF996}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "Presentation\WebApi\WebApi.csproj", "{19ECD364-AD7D-4A99-ACA7-E80F14D93840}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{88DCE625-1F50-4C14-AC21-7F84DB394FC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{D4414799-5682-43B7-BD20-49D80A353A06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,10 @@ Global
 		{19ECD364-AD7D-4A99-ACA7-E80F14D93840}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19ECD364-AD7D-4A99-ACA7-E80F14D93840}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19ECD364-AD7D-4A99-ACA7-E80F14D93840}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88DCE625-1F50-4C14-AC21-7F84DB394FC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DCE625-1F50-4C14-AC21-7F84DB394FC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DCE625-1F50-4C14-AC21-7F84DB394FC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88DCE625-1F50-4C14-AC21-7F84DB394FC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +56,6 @@ Global
 		{EAA44E1F-9A0F-43A5-982B-93631D5D62C8} = {A1AECC48-2F87-4ECD-AA9C-290E4E2F84C0}
 		{580F9DAE-EF0C-480B-9F56-92EF979CF996} = {BBC00B75-507E-482A-A788-5F15CBFE068E}
 		{19ECD364-AD7D-4A99-ACA7-E80F14D93840} = {E47C91E0-90B7-4858-9FE1-27BD3DB09B5A}
+		{88DCE625-1F50-4C14-AC21-7F84DB394FC8} = {D4414799-5682-43B7-BD20-49D80A353A06}
 	EndGlobalSection
 EndGlobal

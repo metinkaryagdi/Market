@@ -1,6 +1,7 @@
 ﻿using Application.Features.Queries.CategoryQueries;
 using Application.Features.Results.CategoryResults;
 using AutoMapper;
+using Core.Application.Interfaces;
 using Domain.Interfaces;
 using MediatR;
 using System;
@@ -12,19 +13,18 @@ namespace Application.Features.Handlers.CategoryHandlers
 {
     public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, IEnumerable<GetCategoryQueryResult>>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetCategoryQueryHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public GetCategoryQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<GetCategoryQueryResult>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
         {
-            var categories = await _categoryRepository.GetAllAsync();
-
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<GetCategoryQueryResult>>(categories);
         }
     }

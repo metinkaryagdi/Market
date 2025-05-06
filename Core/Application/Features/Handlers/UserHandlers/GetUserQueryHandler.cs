@@ -1,7 +1,7 @@
-﻿using Application.Features.Results.UserResults;
-using Application.Features.Queries.UserQueries;
+﻿using Application.Features.Queries.UserQueries;
+using Application.Features.Results.UserResults;
 using AutoMapper;
-using Domain.Interfaces; // IUserRepository'i kullanıyoruz
+using Domain.Interfaces;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,7 +11,7 @@ namespace Application.Features.Handlers.UserHandlers
 {
     public class GetUserQueryHandler : IRequestHandler<GetUserQuery, List<GetUserQueryResult>>
     {
-        private readonly IUserRepository _userRepository; // IUserRepository'i kullanıyoruz
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
         public GetUserQueryHandler(IUserRepository userRepository, IMapper mapper)
@@ -22,13 +22,8 @@ namespace Application.Features.Handlers.UserHandlers
 
         public async Task<List<GetUserQueryResult>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
-            // Kullanıcıları repository üzerinden al
             var users = await _userRepository.GetAllAsync();
-
-            // AutoMapper ile Entity'leri DTO'ya dönüştür
-            var result = _mapper.Map<List<GetUserQueryResult>>(users);
-
-            return result;
+            return _mapper.Map<List<GetUserQueryResult>>(users);
         }
     }
 }

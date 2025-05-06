@@ -5,41 +5,36 @@ using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Application.Interfaces;
 
 namespace Application.Features.Handlers.UserHandlers
 {
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Unit>
     {
-        private readonly IUserRepository _userRepository; // IUserRepository'i kullanıyoruz
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public UpdateUserCommandHandler(IUserRepository userRepository, IMapper mapper)
+        public UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<Unit> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            // Kullanıcıyı repository üzerinden al
-            var user = await _userRepository.GetByIdAsync(request.UserId);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(request.UserId);
 
             if (user == null)
             {
-                // Kullanıcı bulunamadıysa hata fırlat
                 throw new Exception("User not found");
             }
 
-            // Kullanıcıyı map'le ve güncellenmiş verilerle doldur
             _mapper.Map(request, user);
 
-            // Kullanıcıyı güncelle
-            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.UserRepository.UpdateAsync(user);
+            await _unitOfWork.CompleteAsync(); // Değişiklikleri kaydet
 
-            // Değişiklikleri kaydet
-            await _userRepository.SaveChangesAsync();
-
-            return Unit.Value; // MediatR'da void yerine Unit döner
+            return Unit.Value;
         }
     }
 }

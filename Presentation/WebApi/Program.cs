@@ -1,44 +1,54 @@
 ﻿using Application.Features.Queries.UserQueries;
 using Application.Mapping;
+using Core.Application.Interfaces;
 using Domain.Interfaces;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Persistance.Context;
 using Persistance.Repositories;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS servislerini ekleyin
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()  // Herhangi bir kaynağa izin verir
-              .AllowAnyMethod()  // Herhangi bir HTTP metoduna izin verir
-              .AllowAnyHeader();  // Herhangi bir header'a izin verir
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// Add services to the container.
+// DbContext
 builder.Services.AddDbContext<MarketContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MarketDbConnection")));
 
-// MediatR için assembly kaydını yapın
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetUserByIdQuery).Assembly));
+// MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(GetUserByIdQuery).Assembly));
 
-// AutoMapper profil dosyalarını ekleyin
+// AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 builder.Services.AddAutoMapper(typeof(CategoryProfile));
 
-// Repositories ekleyin
-builder.Services.AddRepositories();
+// FluentValidation
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<Program>());
 
-// Controllers'ları ekleyin
+// Repositories ve Unit of Work
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Controllers
 builder.Services.AddControllers();
 
-// Swagger için gerekli yapılandırmalar
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>
 {
@@ -47,7 +57,7 @@ builder.Services.AddSwaggerGen(x =>
 
 var app = builder.Build();
 
-// CORS politikasını uygulayın
+// CORS uygulama
 app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
@@ -56,14 +66,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(x =>
     {
         x.SwaggerEndpoint("/swagger/v1/swagger.json", "MyApi v1");
-        x.RoutePrefix = string.Empty;  // Swagger UI'yi otomatik olarak açmak için
+        x.RoutePrefix = string.Empty;
     });
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

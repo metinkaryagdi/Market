@@ -1,6 +1,7 @@
 ﻿using Application.Features.Queries.CategoryQueries;
 using Application.Features.Results.CategoryResults;
 using AutoMapper;
+using Core.Application.Interfaces;
 using Domain.Interfaces;
 using MediatR;
 using System;
@@ -11,18 +12,18 @@ namespace Application.Features.Handlers.CategoryHandlers
 {
     public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, GetCategoryByIdQueryResult>
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public GetCategoryByIdQueryHandler(ICategoryRepository categoryRepository, IMapper mapper)
+        public GetCategoryByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<GetCategoryByIdQueryResult> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
+            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
 
             if (category == null)
                 throw new Exception("Kategori bulunamadı.");
